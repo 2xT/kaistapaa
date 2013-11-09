@@ -1,0 +1,69 @@
+ohjelma1: {
+	# Hakutermi
+	# =========
+	keyword: Pulp Fiction,
+
+	# Hakutermin kohdistus
+	# ====================
+	# Vaihtoehdot:
+	# title | description | either
+	#
+	# Oletusarvo jos kentän jättää tyhjäksi:
+	# => title
+	target: ,
+	#target: title,
+	#target: description,
+	#target: either,
+
+	# Kanava
+	# ======
+	# Vaihtoehdot:
+	# YLE1 | YLE2 | MTV3 | Nelonen ...
+	#
+	# Oletusarvo jos kentän jättää tyhjäksi:
+	# => kaikki kanavat
+	channel: ,
+	# Tietty kanava:
+	#channel: [MTV3],
+	# Useampi kanava:
+	#channel: [YLE TV1, YLE TV2],
+
+	# Aikarajaus
+	# ==========
+	# esim. 14 tarkoittaa sitä, että vain viikon sisällä
+	#       tulleet ohjelmat ladataan
+	#
+	# Vaihtoehdot:
+	# <päivien lukumäärä numerona>
+	#
+	# Oletusarvo jos kentän jättää tyhjäksi:
+	# => ei aikarajausta
+	lifespan: ,
+	# Samana päivänä
+	#lifespan: 1,
+	# Viikon sisällä
+	#lifespan: 7,
+	# Kahden viikon sisällä
+	#lifespan: 14,
+}
+
+ohjelma2: {
+	keyword: Yle Uutiset sää,
+	target: title,
+	channel: [YLE TV1],
+	lifespan: 1,
+}
+
+ohjelma3: {
+	keyword: A-Studio,
+	target: description,
+	channel: [YLE TV1],
+	lifespan: ,
+}
+
+ohjelma4: {
+	keyword: C.S.I. Miami,
+	target: either,
+	channel: [MTV3],
+	lifespan: 7,
+}
