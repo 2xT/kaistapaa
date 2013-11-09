@@ -2,6 +2,7 @@
 
 # Author      : 2xT@iki.fi
 # Last update : 2013-11-08
+# License     : http://www.dbad-license.org/
 
 # TODO
 # ====

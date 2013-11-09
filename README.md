@@ -101,6 +101,11 @@ Miten toimia kun haluan ...
 
 	Ohjelma luo käynnistyessään lukkotiedoston, mikä varmistaa, että vain yksi kaistapaa on kerrallaan ajossa.
 
+Lisenssi
+--------
+
+[DBAD](http://www.dbad-license.org/)
+
 Palaute
 -------
 
