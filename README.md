@@ -1,9 +1,9 @@
 Kaistapää - TVkaista downloader
 ===============================
 
-Kaistapää on komentoriviohjelma, mikä mahdollistaa avainsanoihin perusteella tapahtuvan mediatiedostojen lataamisen [TVkaista](http://tvkaista.fi/) -palvelusta.
+Kaistapää on komentoriviohjelma, mikä mahdollistaa avainsanojen perusteella tapahtuvan mediatiedostojen lataamisen [TVkaista](http://tvkaista.fi/) -palvelusta.
 
-Kaistapää on toteutettu [Ruby](https://www.ruby-lang.org/en/downloads/) -ohjelmointikielellä ja toimii näin ollen kaikilla yleisimmillä käyttöjärjestelmillä.
+Kaistapää on toteutettu [Ruby](https://www.ruby-lang.org/en/downloads/) -ohjelmointikielellä ja toimii kaikilla yleisimmillä käyttöjärjestelmillä.
 
 Kaistapään toimivuus on testattu Rubyn versiolla 2.0. Ohjelma saattaa toimia vanhemmillakin Rubyn versioilla, mutta niiden toimivuutta ei ole kokeiltu.
 
@@ -12,9 +12,9 @@ Käyttöönotto
 
 1. [Asenna Ruby](https://www.ruby-lang.org/en/downloads/)
 2. [Asenna Git](http://git-scm.com/downloads)
-3. Hae [Kaistapää](polku)
+3. Hae [Kaistapää](https://github.com/2xT/kaistapaa)
 	
-        git clone <polku>
+        git clone https://github.com/2xT/kaistapaa
 
 4. Muokkaa asetuksia
 
@@ -55,7 +55,7 @@ Miten toimia kun haluan ...
 
 		ruby ./kaistapaa -h
 
-* ... testata avainsanojen muutoksia?
+* ... kokeilla avainsanojen muutoksia?
 
 		ruby ./kaistapaa -t
 
@@ -79,17 +79,17 @@ Miten toimia kun haluan ...
 
 		ruby ./kaistapaa -f
 
-* ... siirtää lataushakemiston toiseen paikkaan?
+* ... siirtää lataushakemisto toiseen paikkaan?
 
 	Kopioi lataushakemisto haluttuun paikkaan ja aseta uusi polku asetukset.yml -tiedostoon.
 
-* ... siirtää tilahakemiston toiseen paikkaan?
+* ... siirtää tilahakemisto toiseen paikkaan?
 
 	Kopioi tilahakemisto haluttuun paikkaan ja aseta uusi polku asetukset.yml -tiedostoon.
 
 * ... suorittaa ohjelman automaattisesti 15 minuutin välein?
 
-	[Apple OSX](http://en.wikipedia.org/wiki/OS_X) ja [Linux](http://en.wikipedia.org/wiki/Linux) -pohjaisissa käyttöjärjestelmissä voit hyödyntää cron -palvelua
+	[Apple OSX](http://en.wikipedia.org/wiki/OS_X) ja [Linux](http://en.wikipedia.org/wiki/Linux) -pohjaisissa käyttöjärjestelmissä voit hyödyntää cron -palvelua.
 	
 	Muokkaa crontab -tiedostoa
 	
