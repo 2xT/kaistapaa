@@ -132,7 +132,7 @@ def parse_yaml(filename)
   parsed = begin
     config = YAML.load(File.open(filename))
   rescue ArgumentError => e
-    puts "[!] Could not parse YAML: #{e.message}"
+    puts "[!] Could not parse #{filename}: #{e.message}"
   end
 
   config
@@ -173,7 +173,8 @@ def fetch_file(program, config, options, tvkaista_item)
   semaphore = "#{config['settings']['historydir']}/#{program_filename}"
 
   # Add fule path to program_filename
-  program_filename = "#{config['settings']['mediadir']}/#{program_filename}"
+  program_dir      = program_filename.split(/_/)[0]
+  program_filename = "#{config['settings']['mediadir']}/#{program_dir}/#{program_filename}"
 
   # Check whether the program matches the defined criteria
   if (tvkaista_item.target == 'title' and                      # match title
@@ -222,6 +223,12 @@ def fetch_file(program, config, options, tvkaista_item)
         if options[:debug] == true
           puts "[+] Writing #{program_filename} ..."
         end
+
+        unless Dir.exists?(program_dir)
+          FileUtils.mkdir_p program_dir
+          puts "[+] Created directory #{program_dir}"
+        end
+
         open program_filename, 'wb' do |io|
           response.read_body do |chunk|
             io.write chunk
