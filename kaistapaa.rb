@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Author      : 2xT@iki.fi
-# Last update : 2013-11-08
+# Last update : 2013-11-10
 # License     : http://www.dbad-license.org/
 
 # TODO
@@ -172,6 +172,9 @@ def fetch_file(program, config, options, tvkaista_item)
   # Init semaphore
   semaphore = "#{config['settings']['historydir']}/#{program_filename}"
 
+  # Add fule path to program_filename
+  program_filename = "#{config['settings']['mediadir']}/#{program_filename}"
+
   # Check whether the program matches the defined criteria
   if (tvkaista_item.target == 'title' and                      # match title
              program.title =~ /#{tvkaista_item.keyword}/i) or
@@ -217,9 +220,9 @@ def fetch_file(program, config, options, tvkaista_item)
 
       http.request request do |response|
         if options[:debug] == true
-          puts "[+] Writing #{config['settings']['mediadir']}/#{program_filename} ..."
+          puts "[+] Writing #{program_filename} ..."
         end
-        open "#{config['settings']['mediadir']}/#{program_filename}", 'wb' do |io|
+        open program_filename, 'wb' do |io|
           response.read_body do |chunk|
             io.write chunk
           end
