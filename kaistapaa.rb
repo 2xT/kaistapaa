@@ -379,10 +379,15 @@ feeds.each do |entry|
       if queue_for_download == true
         if program.enclosure
           if options[:concurrency] == true
-            # threads << Thread.new { fetch_file(program.source.content, program.enclosure.url, program.enclosure.length, config, options, entry) }
-            threads << Thread.new { fetch_file(program, config, options, entry) }
+            # Still trying to figure out how threads work in ruby ...
+            threads << Thread.new do
+              begin
+                fetch_file(program, config, options, entry)
+              rescue
+                puts "[-] Failed at fetching #{program.title}"
+              end
+            end
           else
-            # fetch_file(program.source.content, program.enclosure.url, program.enclosure.length, config, options)
             fetch_file(program, config, options, entry)
           end
         else
