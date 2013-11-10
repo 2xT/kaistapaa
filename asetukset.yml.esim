@@ -1,3 +1,4 @@
+# TVkaista -palvelun tunnukset
 credentials: {
 	# TVkaista username
 	user: USERNAME,
@@ -5,8 +6,9 @@ credentials: {
 	password: PASSWORD,
 } 
 
+# Asetukset
 settings: {
-	# Quality of the downloaded media
+	# Quality of the downloaded media [ h264 | ts ]
 	quality: h264,
 	# Proxy address - NOT IMPLEMENTED YET
 	proxy_addr: ,
@@ -20,6 +22,7 @@ settings: {
 	lockfile: /path/to/your/state/lock,
 }
 
+# Otsikkotiedot
 labels: {
 	# Label for new program
 	new: UUSI,
