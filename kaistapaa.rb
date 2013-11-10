@@ -4,6 +4,10 @@
 # Last update : 2013-11-10
 # License     : http://www.dbad-license.org/
 
+# Path to configuration files i.e. asetukset.yml and avainsanat.yml
+# Defaults to the same directory with kaistapaa.rb
+path_to_config = '.'
+
 # TODO
 # ====
 # => Refactor the code
@@ -88,7 +92,7 @@ class Optparse
     # The options specified on the command line will be collected in *options*.
     # We set default values here.
     options = OpenStruct.new
-    options.concurrency = true
+    options.concurrency = false
     options.debug       = false
     options.removelock  = false
     options.verbose     = true
@@ -97,8 +101,8 @@ class Optparse
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} [options]"
 
-      opts.on("-c", "--disable-concurrency", "Disable concurrent downloads") do |c|
-        options.concurrency = false
+      opts.on("-c", "--enable-concurrency", "Enable concurrent downloads") do |c|
+        options.concurrency = true
       end
 
       opts.on("-d", "--enable-debug-mode", "Enable debug mode") do |d|
@@ -248,8 +252,8 @@ def fetch_file(program, config, options, tvkaista_item)
 end # def
 
 # Main
-keywords = parse_yaml('avainsanat.yml')
-config   = parse_yaml('asetukset.yml')
+keywords = parse_yaml("#{path_to_config}/avainsanat.yml")
+config   = parse_yaml("#{path_to_config}/asetukset.yml")
 options  = Optparse.parse(ARGV)
 time_now = Time.new
 threads  = []

@@ -7,6 +7,8 @@ Kaistapää on toteutettu [Ruby](https://www.ruby-lang.org/en/downloads/) -ohjel
 
 Kaistapään toimivuus on testattu Rubyn versiolla 2.0. Ohjelma saattaa toimia vanhemmillakin Rubyn versioilla, mutta niiden toimivuutta ei ole kokeiltu.
 
+Ohjelma tarvitsee [TVkaista](http://tvkaista.fi/) -palvelun tunnukset toimiakseen.
+
 Käyttöönotto
 ------------
 
@@ -59,9 +61,11 @@ Miten toimia kun haluan ...
 
 		ruby ./kaistapaa -t
 
-* ... ladata ohjelmat peräkkäin eikä samaan aikaan?
+* ... ladata rinnakkain eikä peräkkäin?
 
 		ruby ./kaistapaa -c
+
+	(Omalla vastuulla, yhtäaikainen lataus ei ole tällä hetkellä kovin vakaa ...)
 
 * ... etsiä löytyykö TVkaistalta "Pulp Fiction" -elokuvaa?
 
