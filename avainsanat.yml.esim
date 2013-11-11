@@ -29,6 +29,19 @@ ohjelma1: {
 	# Useampi kanava:
 	#channel: [YLE TV1, YLE TV2],
 
+	# Kellonaika
+	# ==========
+	# esim. 14 tarkoittaa sitä, että ohjelman pitää
+	#       alkaa kello 14 tai sen jälkeen
+	#
+	# Oletusarvo jos kentän jättää tyhjäksi:
+	# => ei alkamisajankohtarajoituksia
+	starts_after: ,
+	# Kello 15:00 tai myöhemmin
+	#starts_after: 15,
+	# Kello 21:00 tai myöhemmin
+	#starts_after: 21,
+
 	# Aikarajaus
 	# ==========
 	# esim. 14 tarkoittaa sitä, että vain viikon sisällä
@@ -52,6 +65,7 @@ ohjelma2: {
 	keyword: Yle Uutiset sää,
 	target: title,
 	channel: [YLE TV1],
+	starts_after: 17,
 	lifespan: 1,
 }
 
@@ -59,6 +73,7 @@ ohjelma3: {
 	keyword: A-Studio,
 	target: description,
 	channel: [YLE TV1],
+	starts_after: ,
 	lifespan: ,
 }
 
@@ -66,5 +81,6 @@ ohjelma4: {
 	keyword: C.S.I. Miami,
 	target: either,
 	channel: [MTV3],
+	starts_after: 21,
 	lifespan: 7,
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Author      : 2xT@iki.fi
-# Last update : 2013-11-10
+# Last update : 2013-11-11
 # License     : http://www.dbad-license.org/
 
 # Path to configuration files i.e. asetukset.yml and avainsanat.yml
@@ -75,14 +75,15 @@ end # class Locking
 
 class TVkaistaFeed
   # This class contains feeds created for given keywords
-  attr_reader :feed, :keyword, :target, :lifespan, :channel
+  attr_reader :feed, :keyword, :target, :lifespan, :starts_after, :channel
 
-  def initialize(feed, keyword, target='title', lifespan=nil, channel=nil)
-    @feed     = feed
-    @keyword  = keyword    # top gun
-    @target   = target     # description
-    @lifespan = lifespan   # 21
-    @channel  = channel    # MTV3
+  def initialize(feed, keyword, target='title', lifespan=nil, starts_after=nil, channel=nil)
+    @feed         = feed
+    @keyword      = keyword       # top gun
+    @target       = target        # description
+    @lifespan     = lifespan      # 21
+    @starts_after = starts_after  # 17
+    @channel      = channel       # MTV3
   end
 end # class TVkaistaFeed
 
@@ -322,11 +323,12 @@ keywords.each_key do |key|
     puts "    #{feed}"
   end
   feeds << TVkaistaFeed.new(
-                feed     = feed,
-                keyword  = keywords[key]['keyword'],
-                target   = keywords[key]['target'],
-                lifespan = keywords[key]['lifespan'],
-                channel  = keywords[key]['channel']
+                feed         = feed,
+                keyword      = keywords[key]['keyword'],
+                target       = keywords[key]['target'],
+                lifespan     = keywords[key]['lifespan'],
+                starts_after = keywords[key]['starts_after'],
+                channel      = keywords[key]['channel']
                 )
 end
 
@@ -342,6 +344,7 @@ feeds.each do |entry|
       # puts "#{program}"
       # puts "#{program.title}"
       # puts "#{program.description}"
+      # puts "#{program.dc_date.hour}:#{program.dc_date.min}"
       queue_for_download = true
 
       # Does the entry have a lifespan restriction?
@@ -362,7 +365,6 @@ feeds.each do |entry|
 
       # Does the entry have a lifespan restriction?
       if entry.channel and queue_for_download == true
-        # if entry.channel.include? program.source.content
         if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
           if options[:debug] == true
             puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}"
@@ -370,6 +372,20 @@ feeds.each do |entry|
         else
           if options[:debug] == true
             puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}"
+          end
+          queue_for_download = false
+        end
+      end
+
+      # Does the entry have a timetable restriction?
+      if entry.starts_after and queue_for_download == true
+        if entry.starts_after < program.dc_date.hour
+          if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00"
+          end
+        else
+          if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00"
           end
           queue_for_download = false
         end
