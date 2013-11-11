@@ -57,7 +57,7 @@ Miten toimia kun haluan ...
 
 		ruby ./kaistapaa -h
 
-* ... kokeilla avainsanojen muutoksia?
+* ... kokeilla avainsana-asetuksia, mutta en vielä ladata ohjelmia?
 
 		ruby ./kaistapaa -t
 
@@ -104,6 +104,19 @@ Miten toimia kun haluan ...
 		*/15 * * * * /polku/minne/laitoit/ohjelman/nimelta/kaistapaa
 
 	Ohjelma luo käynnistyessään lukkotiedoston, mikä varmistaa, että vain yksi kaistapaa on kerrallaan ajossa.
+
+Ohjelma on ihan kuraa - yritin ...
+----------------------------------
+
+* ... suorittaa ohjelman ja tuloksena oli virheilmoitus:
+
+	```
+	[!] Could not parse ./avainsanat.yml: syntax error on line 61, col 1: `}'
+	[!] Could not parse ./asetukset.yml: syntax error on line 5, col 1: `} '
+	kaistapaa.rb:266: undefined method `[]' for nil:NilClass (NoMethodError)
+	```
+
+	Vastaus: Ruby -versiosi on liian vanha, ole ystävällinen ja päivitä uudempaan.
 
 Lisenssi
 --------
