@@ -18,7 +18,11 @@ settings: {
 	# Directory where the state is stored (NO TRAILING SLASH!)
 	historydir: /path/to/your/state,
 	# Location for lockfile that prevents multiple instances being run
-	lockfile: /path/to/your/state/lock, }
+	lockfile: /path/to/your/state/pid,
+	# Location for logfile that records all activity
+	activitylogfile: /path/to/your/state/activity,
+	# Location for logfile that records all errors
+	errorlogfile: /path/to/your/state/errors, }
 
 # Otsikkotiedot
 labels: {

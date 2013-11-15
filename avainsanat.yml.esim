@@ -60,7 +60,6 @@ ohjelma1: {
 	# Kahden viikon sisällä
 	#lifespan: 14,
 
-
 ohjelma2: {
 	keyword: Yle Uutiset sää,
 	target: title,

@@ -25,16 +25,13 @@ path_to_config = '.'
 #    2. Test out keywords
 #    3. Manage configuration
 #
-# => Add logging
-#    1. Log errors
-#    2. Log activity
-#
 # => Add proxy support
 #    1. Add configuration items
 #    2. Add code
 
 require 'cgi'
 require 'fileutils'
+require 'logger'
 require 'net/http'
 require 'open-uri'
 require 'optparse'
@@ -147,7 +144,7 @@ end # def
 # config        => contains config from 'asetukset.yml'
 # options       => contains command line parameters
 # tvkaista_item => contains keyword information
-def fetch_file(program, config, options, tvkaista_item)
+def fetch_file(program, config, options, tvkaista_item, a_logger)
   program_channel  = program.source.content
   program_url      = program.enclosure.url
   program_size     = program.enclosure.length
@@ -191,23 +188,35 @@ def fetch_file(program, config, options, tvkaista_item)
        program.description =~ /#{tvkaista_item.keyword}/i))
 
        # Check if the file already exists (both presence on local disk and semaphore metadata)
+       msg = nil
        if File.exist?(program_filename) == false and File.exist?(semaphore) == false
-         puts "#{config['labels']['new']} : #{program_filename} [#{program_channel}]" if options[:verbose] == true
+         msg = "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
          download_flag = true
        elsif File.exist?(program_filename) == true
          # Download again only if the filesize on the disk is smaller than on the RSS feed
          # i.e. there is a chance that download was previously corrupted
          if File.stat(program_filename).size >= program_size
-           puts "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
+           msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
          else # File.stat(program_filename).size < program_size
-           puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size}" if options[:verbose] == true
-           download_flag = true
-           if File.exists?(semaphore)
-             File.delete(semaphore)
+           # This is horrible program logic but it turns out that TVkaista sometimes
+           # provides inaccurate filesize information on the RSS feed and thus some files get
+           # reloaded over and over again.
+           # On the other hand, if the semaphore exists we can be pretty certain that the
+           # file was downloaded successfully.
+           # So, for now we will download again only if the semaphore does not exist.
+           if File.exist?(semaphore) == false
+             msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
+             download_flag = true
+             if File.exists?(semaphore)
+               File.delete(semaphore)
+             end
            end
          end
        end
-
+       if options[:verbose] == true and msg
+         puts msg
+         a_logger.info msg
+       end
   end # if title | description | either ...
 
   # Disable download if test mode is enabled
@@ -269,6 +278,19 @@ end
 
 # Check that we're not already running!
 locking = Locking.new(filename=config['settings']['lockfile'], time=time_now)
+
+# Enable error logging
+error_log                = File.new(config['settings']['errorlogfile'], 'a')
+e_logger                 = Logger.new(error_log, 'weekly')
+e_logger.datetime_format = '%Y-%m-%d %H:%M:%S'
+$stderr                  = error_log
+
+# Enable activity logging
+activity_log             = File.new(config['settings']['activitylogfile'], 'a')
+a_logger                 = Logger.new(activity_log, 'weekly')
+a_logger.formatter       = proc do |severity, datetime, progname, msg|
+  "#{datetime}: #{msg}\n"
+end
 
 if locking.status
   if options[:removelock] == true
@@ -375,13 +397,13 @@ feeds.each do |entry|
             # Still trying to figure out how threads work in ruby ...
             threads << Thread.new do
               begin
-                fetch_file(program, config, options, entry)
+                fetch_file(program, config, options, entry, a_logger)
               rescue
                 puts "[-] Failed at fetching #{program.title}"
               end
             end
           else
-            fetch_file(program, config, options, entry)
+            fetch_file(program, config, options, entry, a_logger)
           end
         else
           if options[:debug] == true
@@ -401,6 +423,11 @@ threads.each(&:join) if options[:concurrency] == true
 
 # Remove lock
 locking.disable
+
+# Stop logging
+activity_log.close
+error_log.close
+
 if options[:debug] == true
   puts "[+] Lock released"
   puts "[+] All done."
