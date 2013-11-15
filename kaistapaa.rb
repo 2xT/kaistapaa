@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Author      : 2xT@iki.fi
-# Last update : 2013-11-11
+# Last update : 2013-11-15
 # License     : http://www.dbad-license.org/
 
 # Path to configuration files i.e. asetukset.yml and avainsanat.yml
@@ -197,13 +197,15 @@ def fetch_file(program, config, options, tvkaista_item)
          end
          download_flag = true
        elsif File.exist?(program_filename) == true
-         if File.stat(program_filename).size == program_size
+         # Download again only if the filesize on the disk is smaller than on the RSS feed
+         # i.e. there is a chance that download was previously corrupted
+         if File.stat(program_filename).size <= program_size
            if options[:debug] == true
              puts "#{config['labels']['old']} : #{program_filename} [#{program_channel}]"
            end
          else
            if options[:verbose] == true
-             puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] [size #{program_size}/#{File.stat(program_filename).size}]"
+             puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] [DISK #{File.stat(program_filename).size}] != ONLINE #{program_size}/"
            end
            download_flag = true
            if File.exists?(semaphore)
