@@ -3,8 +3,7 @@ credentials: {
 	# TVkaista username
 	user: USERNAME,
 	# TVkaista password
-	password: PASSWORD,
-} 
+	password: PASSWORD, } 
 
 # Asetukset
 settings: {
@@ -19,8 +18,7 @@ settings: {
 	# Directory where the state is stored (NO TRAILING SLASH!)
 	historydir: /path/to/your/state,
 	# Location for lockfile that prevents multiple instances being run
-	lockfile: /path/to/your/state/lock,
-}
+	lockfile: /path/to/your/state/lock, }
 
 # Otsikkotiedot
 labels: {
@@ -29,5 +27,4 @@ labels: {
 	# Label for already downloaded program
 	old: WANHA,
 	# Label for corrupted program that needs to be downloaded again
-	reload: UUDELLEEN,
-}
+	reload: UUDELLEEN, }

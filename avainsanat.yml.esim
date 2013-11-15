@@ -52,35 +52,32 @@ ohjelma1: {
 	#
 	# Oletusarvo jos kentän jättää tyhjäksi:
 	# => ei aikarajausta
-	lifespan: ,
+	lifespan: , }
 	# Samana päivänä
 	#lifespan: 1,
 	# Viikon sisällä
 	#lifespan: 7,
 	# Kahden viikon sisällä
 	#lifespan: 14,
-}
+
 
 ohjelma2: {
 	keyword: Yle Uutiset sää,
 	target: title,
 	channel: [YLE TV1],
 	starts_after: 17,
-	lifespan: 1,
-}
+	lifespan: 1, }
 
 ohjelma3: {
 	keyword: A-Studio,
 	target: description,
 	channel: [YLE TV1],
 	starts_after: ,
-	lifespan: ,
-}
+	lifespan: , }
 
 ohjelma4: {
 	keyword: C.S.I. Miami,
 	target: either,
 	channel: [MTV3],
 	starts_after: 21,
-	lifespan: 7,
-}
+	lifespan: 7, }
