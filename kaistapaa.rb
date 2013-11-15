@@ -178,8 +178,8 @@ def fetch_file(program, config, options, tvkaista_item)
   semaphore = "#{config['settings']['historydir']}/#{program_filename}"
 
   # Add fule path to program_filename
-  program_dir      = program_filename.split(/_/)[0]
-  program_filename = "#{config['settings']['mediadir']}/#{program_dir}/#{program_filename}"
+  program_dir      = "#{config['settings']['mediadir']}/#{program_filename.split(/_/)[0]}"
+  program_filename = "#{program_dir}/#{program_filename}"
 
   # Check whether the program matches the defined criteria
   if (tvkaista_item.target == 'title' and                      # match title
@@ -203,7 +203,7 @@ def fetch_file(program, config, options, tvkaista_item)
            end
          else
            if options[:verbose] == true
-             puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}]"
+             puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] [size #{program_size}/#{File.stat(program_filename).size}]"
            end
            download_flag = true
            if File.exists?(semaphore)
