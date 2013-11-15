@@ -175,9 +175,9 @@ def fetch_file(program, config, options, tvkaista_item)
   end # Net::HTTP.start(uri.host, uri.port) do |http|
 
   # Init semaphore
-  semaphore = "#{config['settings']['historydir']}/#{program_filename}"
+  semaphore        = "#{config['settings']['historydir']}/#{program_filename}"
 
-  # Add fule path to program_filename
+  # Add full path to the program_filename
   program_dir      = "#{config['settings']['mediadir']}/#{program_filename.split(/_/)[0]}"
   program_filename = "#{program_dir}/#{program_filename}"
 
@@ -192,21 +192,15 @@ def fetch_file(program, config, options, tvkaista_item)
 
        # Check if the file already exists (both presence on local disk and semaphore metadata)
        if File.exist?(program_filename) == false and File.exist?(semaphore) == false
-         if options[:verbose] == true
-           puts "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
-         end
+         puts "#{config['labels']['new']} : #{program_filename} [#{program_channel}]" if options[:verbose] == true
          download_flag = true
        elsif File.exist?(program_filename) == true
          # Download again only if the filesize on the disk is smaller than on the RSS feed
          # i.e. there is a chance that download was previously corrupted
-         if File.stat(program_filename).size <= program_size
-           if options[:debug] == true
-             puts "#{config['labels']['old']} : #{program_filename} [#{program_channel}]"
-           end
-         else
-           if options[:verbose] == true
-             puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] [DISK #{File.stat(program_filename).size}] != ONLINE #{program_size}/"
-           end
+         if File.stat(program_filename).size >= program_size
+           puts "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
+         else # File.stat(program_filename).size < program_size
+           puts "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size}" if options[:verbose] == true
            download_flag = true
            if File.exists?(semaphore)
              File.delete(semaphore)
@@ -216,20 +210,17 @@ def fetch_file(program, config, options, tvkaista_item)
 
   end # if title | description | either ...
 
-  # Download file
-  if options[:test] == true
-    download_flag = false
-  end
+  # Disable download if test mode is enabled
+  download_flag = false if options[:test] == true
 
+  # Download file
   if program_filename and download_flag == true and File.exist?(semaphore) == false
     Net::HTTP.start(uri.host, uri.port) do |http|
       request = Net::HTTP::Get.new uri
       request.basic_auth config['credentials']['user'], config['credentials']['password']
 
       http.request request do |response|
-        if options[:debug] == true
-          puts "[+] Writing #{program_filename} ..."
-        end
+        puts "[+] Writing #{program_filename} ..." if options[:debug] == true
 
         unless Dir.exists?(program_dir)
           FileUtils.mkdir_p program_dir
@@ -246,9 +237,7 @@ def fetch_file(program, config, options, tvkaista_item)
     s = File.open(semaphore, 'w')
     s.write("")
     s.close
-    if options[:debug] == true
-      puts "[+] Semaphore created for #{program_filename}"
-    end
+    puts "[+] Semaphore created for #{program_filename}" if options[:debug] == true
   end
 
   program_filename
@@ -297,9 +286,7 @@ if locking.status
 end
 
 locking.enable
-if options[:debug] == true
-  puts "[+] Lock acquired"
-end
+puts "[+] Lock acquired" if options[:debug] == true
 
 if options[:search]
   puts "[+] Searching #{options[:search]}"
@@ -354,13 +341,9 @@ feeds.each do |entry|
         # How old is the current program (in days)?
         delta = (time_now - program.dc_date).to_i / (24 * 60 * 60)
         if delta < entry.lifespan
-          if options[:debug] == true
-            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)"
-          end
+          puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
         else
-          if options[:debug] == true
-            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)"
-          end
+          puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
           queue_for_download = false
         end
       end
@@ -368,13 +351,9 @@ feeds.each do |entry|
       # Does the entry have a lifespan restriction?
       if entry.channel and queue_for_download == true
         if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
-          if options[:debug] == true
-            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}"
-          end
+          puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options[:debug] == true
         else
-          if options[:debug] == true
-            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}"
-          end
+          puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options[:debug] == true
           queue_for_download = false
         end
       end
@@ -382,13 +361,9 @@ feeds.each do |entry|
       # Does the entry have a timetable restriction?
       if entry.starts_after and queue_for_download == true
         if entry.starts_after < program.dc_date.hour
-          if options[:debug] == true
-            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00"
-          end
+          puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
         else
-          if options[:debug] == true
-            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00"
-          end
+          puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
           queue_for_download = false
         end
       end
@@ -421,9 +396,8 @@ feeds.each do |entry|
   end # open(entry.url ...
 end # feeds.each do |entry|
 
-if options[:concurrency] == true
-  threads.each(&:join) # Wait for all the threads to finish before proceeding
-end
+# Wait for all the threads to finish before proceeding
+threads.each(&:join) if options[:concurrency] == true
 
 # Remove lock
 locking.disable
