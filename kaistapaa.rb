@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 
 # Author      : 2xT@iki.fi
-# Last update : 2013-11-15
+# Last update : 2013-11-16
 # License     : http://www.dbad-license.org/
 
-# Path to configuration files i.e. asetukset.yml and avainsanat.yml
+# Path to configuration files i.e. 
+#   'asetukset.yml'
+#   'avainsanat.yml'
 # Defaults to the same directory with kaistapaa.rb
 path_to_config = '.'
 
@@ -20,14 +22,18 @@ path_to_config = '.'
 #    3. I'm a bit ashamed to publish this cruft ... but I figured that if this solved the case
 #       for me it might do the same for others as well. Sharing is caring :)
 #
+# => Add proxy support
+#    1. Add configuration items
+#    2. Add code
+#
 # => Web UI
 #    1. Manage keywords
 #    2. Test out keywords
 #    3. Manage configuration
 #
-# => Add proxy support
-#    1. Add configuration items
-#    2. Add code
+# => Progress indicator
+#    1. What is being downloaded
+#    2. How long is it going to take?
 
 require 'cgi'
 require 'fileutils'
@@ -408,7 +414,7 @@ feeds.each do |entry|
         else
           if options[:debug] == true
             puts "[-] Current program does not contain the information needed for the download."
-            puts "    This usually means that the media conversion has not yet completed on the server."
+            puts "    This usually means that the media conversion on the server has not yet completed."
             puts "    In other words: please check back later :)"
           end
         end

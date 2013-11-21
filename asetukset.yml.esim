@@ -7,7 +7,7 @@ credentials: {
 
 # Asetukset
 settings: {
-	# Quality of the downloaded media [ iTunes | flv | mpeg4 | h264 | ts ]
+	# Quality of the downloaded media [ mp4 | mpeg4 | h264 | ts ]
 	quality: ts,
 	# Proxy address - NOT IMPLEMENTED YET
 	proxy_addr: ,
