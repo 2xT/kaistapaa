@@ -266,7 +266,7 @@ options  = Optparse.parse(ARGV)
 time_now = Time.new
 threads  = []
 feeds    = []
-weekdays = %w[SU MA TI KE TO PE LA]
+weekdays = %w[SUN MON TUE WED THU FRI SAT]
 
 # Check that the environment is sane
 
