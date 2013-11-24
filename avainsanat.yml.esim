@@ -1,7 +1,7 @@
 # Uniikki nimi
 ohjelma1: {
-	# Hakutermi
-	# =========
+	# Hakutermi (ainoa pakollinen kenttä)
+	# ===================================
 	keyword: Pulp Fiction,
 
 	# Hakutermin kohdistus
@@ -19,7 +19,7 @@ ohjelma1: {
 	# Kanava
 	# ======
 	# Vaihtoehdot:
-	# YLE1 | YLE2 | MTV3 | Nelonen ...
+	# YLE TV1 | YLE TV2 | MTV3 | Nelonen ...
 	#
 	# Oletusarvo jos kentän jättää tyhjäksi:
 	# => kaikki kanavat
@@ -52,7 +52,7 @@ ohjelma1: {
 	#
 	# Oletusarvo jos kentän jättää tyhjäksi:
 	# => ei aikarajausta
-	lifespan: , }
+	lifespan: ,
 	# Samana päivänä
 	#lifespan: 1,
 	# Viikon sisällä
@@ -60,23 +60,48 @@ ohjelma1: {
 	# Kahden viikon sisällä
 	#lifespan: 14,
 
+	# Viikonpäivä
+	# ===========
+	# esim. [MON, TUE]
+	#
+	# Vaihtoehdot:
+	# MON | TUE | WED | THU | FRI | SAT | SUN
+	#
+	# Oletusarvo jos kentän jättää tyhjäksi:
+	# => ei aikarajausta
+	weekday: , }
+	# Tietty päivä (perjantai):
+	#weekday: [FRI],
+	# Arkipäivät:
+	#weekday: [MON, TUE, WED, THU, FRI],
+	# Viikonloppu:
+	#weekday: [SAT, SUN],
+
 ohjelma2: {
 	keyword: Yle Uutiset sää,
 	target: title,
 	channel: [YLE TV1],
 	starts_after: 17,
-	lifespan: 1, }
+	lifespan: 1,
+	weekday: , }
 
 ohjelma3: {
 	keyword: A-Studio,
 	target: description,
 	channel: [YLE TV1],
 	starts_after: ,
-	lifespan: , }
+	lifespan: ,
+	weekday: , }
 
 ohjelma4: {
 	keyword: C.S.I. Miami,
 	target: either,
 	channel: [MTV3],
 	starts_after: 21,
-	lifespan: 7, }
+	lifespan: 7,
+	weekday: , }
+
+# Avainsanat voi kirjoittaa myös "tiiviistettyyn" muotoon
+# ohjelma5: { keyword: formula }
+# ohjelma6: { keyword: formula, channel: [MTV3] }
+# jne.

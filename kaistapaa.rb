@@ -78,15 +78,16 @@ end # class Locking
 
 class TVkaistaFeed
   # This class contains feeds created for given keywords
-  attr_reader :feed, :keyword, :target, :lifespan, :starts_after, :channel
+  attr_reader :feed, :keyword, :target, :lifespan, :starts_after, :channel, :weekday
 
-  def initialize(feed, keyword, target='title', lifespan=nil, starts_after=nil, channel=nil)
+  def initialize(feed, keyword, target='title', lifespan=nil, starts_after=nil, channel=nil, weekday=nil)
     @feed         = feed
     @keyword      = keyword       # top gun
     @target       = target        # description
     @lifespan     = lifespan      # 21
     @starts_after = starts_after  # 17
     @channel      = channel       # MTV3
+    @weekday      = weekday       # thu
   end
 end # class TVkaistaFeed
 
@@ -265,6 +266,7 @@ options  = Optparse.parse(ARGV)
 time_now = Time.new
 threads  = []
 feeds    = []
+weekdays = %w[SU MA TI KE TO PE LA]
 
 # Check that the environment is sane
 
@@ -345,7 +347,8 @@ keywords.each_key do |key|
                 target       = keywords[key]['target'],
                 lifespan     = keywords[key]['lifespan'],
                 starts_after = keywords[key]['starts_after'],
-                channel      = keywords[key]['channel']
+                channel      = keywords[key]['channel'],
+                weekday      = keywords[key]['weekday']
                 )
 end
 
@@ -392,6 +395,16 @@ feeds.each do |entry|
           puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
         else
           puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
+          queue_for_download = false
+        end
+      end
+
+      # Does the entry have a weekday restriction?
+      if entry.weekday and queue_for_download == true
+        if entry.weekday.any?{ |s| s.casecmp(weekdays[program.dc_date.wday])==0 }
+          puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options[:debug] == true
+        else
+          puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options[:debug] == true
           queue_for_download = false
         end
       end
