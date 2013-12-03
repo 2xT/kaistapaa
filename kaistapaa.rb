@@ -256,6 +256,10 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
     puts "[+] Semaphore created for #{program_filename}" if options[:debug] == true
   end
 
+  rescue Exception => e
+    $stderr.puts “Exception #{e} : #{e.message}"
+    $stderr.puts "Stack trace: #{backtrace.map {|l| "  #{l}\n"}.join}"
+
   program_filename
 end # def
 
@@ -290,7 +294,9 @@ locking = Locking.new(filename=config['settings']['lockfile'], time=time_now)
 # Enable error logging
 error_log                = File.new(config['settings']['errorlogfile'], 'a')
 e_logger                 = Logger.new(error_log, 'weekly')
-e_logger.datetime_format = '%Y-%m-%d %H:%M:%S'
+e_logger.formatter       = proc do |severity, datetime, progname, msg|
+  "#{datetime}: #{msg}\n"
+end
 $stderr                  = error_log
 
 # Enable activity logging
@@ -356,100 +362,114 @@ end
 # 1. Fetch the RSS feed derived from the configuration
 # 2. Process the results i.e. get the individual programs from
 #    the feed process the ones that match the given criteria
-feeds.each do |entry|
-  open(entry.feed, :http_basic_authentication => [config['credentials']['user'], config['credentials']['password']]) do |rss|
-    feed = RSS::Parser.parse(rss, false)
-    feed.items.each do |program|
-      # puts program.inspect
-      # puts "#{program}"
-      # puts "#{program.title}"
-      # puts "#{program.description}"
-      # puts "#{program.dc_date.hour}:#{program.dc_date.min}"
-      queue_for_download = true
 
-      # Does the entry have a lifespan restriction?
-      if entry.lifespan and queue_for_download == true
-        # How old is the current program (in days)?
-        delta = (time_now - program.dc_date).to_i / (24 * 60 * 60)
-        if delta < entry.lifespan
-          puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
-        else
-          puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
-          queue_for_download = false
+# "Catch all" error handling begins
+begin
+  feeds.each do |entry|
+    open(entry.feed, :http_basic_authentication => [config['credentials']['user'], config['credentials']['password']]) do |rss|
+      feed = RSS::Parser.parse(rss, false)
+      feed.items.each do |program|
+        # puts program.inspect
+        # puts "#{program}"
+        # puts "#{program.title}"
+        # puts "#{program.description}"
+        # puts "#{program.dc_date.hour}:#{program.dc_date.min}"
+        queue_for_download = true
+
+        # Does the entry have a lifespan restriction?
+        if entry.lifespan and queue_for_download == true
+          # How old is the current program (in days)?
+          delta = (time_now - program.dc_date).to_i / (24 * 60 * 60)
+          if delta < entry.lifespan
+            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+          else
+            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+            queue_for_download = false
+          end
         end
-      end
 
-      # Does the entry have a lifespan restriction?
-      if entry.channel and queue_for_download == true
-        if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
-          puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options[:debug] == true
-        else
-          puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options[:debug] == true
-          queue_for_download = false
+        # Does the entry have a lifespan restriction?
+        if entry.channel and queue_for_download == true
+          if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
+            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options[:debug] == true
+          else
+            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options[:debug] == true
+            queue_for_download = false
+          end
         end
-      end
 
-      # Does the entry have a timetable restriction?
-      if entry.starts_after and queue_for_download == true
-        if entry.starts_after < program.dc_date.hour
-          puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
-        else
-          puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
-          queue_for_download = false
+        # Does the entry have a timetable restriction?
+        if entry.starts_after and queue_for_download == true
+          if entry.starts_after < program.dc_date.hour
+            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
+          else
+            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
+            queue_for_download = false
+          end
         end
-      end
 
-      # Does the entry have a weekday restriction?
-      if entry.weekday and queue_for_download == true
-        if entry.weekday.any?{ |s| s.casecmp(weekdays[program.dc_date.wday])==0 }
-          puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options[:debug] == true
-        else
-          puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options[:debug] == true
-          queue_for_download = false
+        # Does the entry have a weekday restriction?
+        if entry.weekday and queue_for_download == true
+          if entry.weekday.any?{ |s| s.casecmp(weekdays[program.dc_date.wday])==0 }
+            puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options[:debug] == true
+          else
+            puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options[:debug] == true
+            queue_for_download = false
+          end
         end
-      end
 
-      # Download the actual media file if it is already available (program.respond_to?('enclosure'))
-      if queue_for_download == true
-        if program.enclosure
-          if options[:concurrency] == true
-            # Still trying to figure out how threads work in ruby ...
-            threads << Thread.new do
-              begin
-                fetch_file(program, config, options, entry, a_logger)
-              rescue
-                puts "[-] Failed at fetching #{program.title}"
+        # Download the actual media file if it is already available (program.respond_to?('enclosure'))
+        if queue_for_download == true
+          if program.enclosure
+            if options[:concurrency] == true
+              # Still trying to figure out how threads work in ruby ...
+              threads << Thread.new do
+                begin
+                  fetch_file(program, config, options, entry, a_logger)
+                rescue
+                  puts "[-] Failed at fetching #{program.title}"
+                end
               end
+            else
+              fetch_file(program, config, options, entry, a_logger)
             end
           else
-            fetch_file(program, config, options, entry, a_logger)
-          end
-        else
-          if options[:debug] == true
-            puts "[-] Current program does not contain the information needed for the download."
-            puts "    This usually means that the media conversion on the server has not yet completed."
-            puts "    In other words: please check back later :)"
+            if options[:debug] == true
+              puts "[-] Current program does not contain the information needed for the download."
+              puts "    This usually means that the media conversion on the server has not yet completed."
+              puts "    In other words: please check back later :)"
+            end
           end
         end
-      end
 
-    end # feed.items.each do |program|
-  end # open(entry.url ...
-end # feeds.each do |entry|
+      end # feed.items.each do |program|
+    end # open(entry.url ...
+  end # feeds.each do |entry|
 
-# Wait for all the threads to finish before proceeding
-threads.each(&:join) if options[:concurrency] == true
+  # Wait for all the threads to finish before proceeding
+  threads.each(&:join) if options[:concurrency] == true
 
-# Remove lock
-locking.disable
+# "Catch all" error handling
+rescue Exception => e
 
-# Stop logging
-activity_log.close
-error_log.close
+  puts "ERROR: #{e.inspect}"
+  e_logger.info "ERROR: #{e.inspect}"
 
-if options[:debug] == true
-  puts "[+] Lock released"
-  puts "[+] All done."
+# We need to clean up - no matter what
+ensure
+
+  # Remove lock
+  locking.disable
+
+  # Stop logging
+  activity_log.close
+  error_log.close
+
+  if options[:debug] == true
+    puts "[+] Lock released"
+    puts "[+] All done."
+  end
+
 end
 
 # END
