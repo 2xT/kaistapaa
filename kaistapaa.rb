@@ -211,7 +211,7 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
            # On the other hand, if the semaphore exists we can be pretty certain that the
            # file was downloaded successfully.
            # So, for now we will download again only if the semaphore does not exist.
-           if File.exist?(semaphore) == false
+		   if File.stat(program_filename).size < program_size or File.exist?(semaphore) == false
              msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
              download_flag = true
              if File.exists?(semaphore)
