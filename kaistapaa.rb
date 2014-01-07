@@ -197,21 +197,27 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
        # Check if the file already exists (both presence on local disk and semaphore metadata)
        msg = nil
        if File.exist?(program_filename) == false and File.exist?(semaphore) == false
+         # NEW
          msg = "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
          download_flag = true
        elsif File.exist?(program_filename) == true
          # Download again only if the filesize on the disk is smaller than on the RSS feed
          # i.e. there is a chance that download was previously corrupted
          if File.stat(program_filename).size >= program_size
+           # OLD
            msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
          else # File.stat(program_filename).size < program_size
+           # RELOAD
+
            # This is horrible program logic but it turns out that TVkaista sometimes
            # provides inaccurate filesize information on the RSS feed and thus some files get
            # reloaded over and over again.
            # On the other hand, if the semaphore exists we can be pretty certain that the
            # file was downloaded successfully.
            # So, for now we will download again only if the semaphore does not exist.
-		   if File.stat(program_filename).size < program_size or File.exist?(semaphore) == false
+		   if (File.stat(program_filename).size == 0) or
+		      (File.stat(program_filename).size < program_size) or
+		      (File.exist?(semaphore) == false)
              msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
              download_flag = true
              if File.exists?(semaphore)
