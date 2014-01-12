@@ -1,105 +1,105 @@
 # Uniikki nimi
-ohjelma1: {
-    # Hakutermi (ainoa pakollinen kenttä)
-    # ===================================
-    keyword: Pulp Fiction,
+ohjelma1:
+  # Hakutermi (ainoa pakollinen kenttä)
+  # ===================================
+  keyword: Pulp Fiction
 
-    # Hakutermin kohdistus
-    # ====================
-    # Vaihtoehdot:
-    # title | description | either
-    #
-    # Oletusarvo jos kentän jättää tyhjäksi:
-    # => title
-    target: ,
-    #target: title,
-    #target: description,
-    #target: either,
+  # Hakutermin kohdistus
+  # ====================
+  # Vaihtoehdot:
+  # title | description | either
+  #
+  # Oletusarvo jos kentän jättää tyhjäksi:
+  # => title
+  target:
+  #target: title,
+  #target: description,
+  #target: either,
 
-    # Kanava
-    # ======
-    # Vaihtoehdot:
-    # YLE TV1 | YLE TV2 | MTV3 | Nelonen ...
-    #
-    # Oletusarvo jos kentän jättää tyhjäksi:
-    # => kaikki kanavat
-    channel: ,
-    # Tietty kanava:
-    #channel: [MTV3],
-    # Useampi kanava:
-    #channel: [YLE TV1, YLE TV2],
+  # Kanava
+  # ======
+  # Vaihtoehdot:
+  # YLE TV1 | YLE TV2 | MTV3 | Nelonen ...
+  #
+  # Oletusarvo jos kentän jättää tyhjäksi:
+  # => kaikki kanavat
+  channel:
+  # Tietty kanava:
+  #channel: [MTV3],
+  # Useampi kanava:
+  #channel: [YLE TV1, YLE TV2],
 
-    # Kellonaika
-    # ==========
-    # esim. 14 tarkoittaa sitä, että ohjelman pitää
-    #       alkaa kello 14 tai sen jälkeen
-    #
-    # Oletusarvo jos kentän jättää tyhjäksi:
-    # => ei alkamisajankohtarajoituksia
-    starts_after: ,
-    # Kello 15:00 tai myöhemmin
-    #starts_after: 15,
-    # Kello 21:00 tai myöhemmin
-    #starts_after: 21,
+  # Kellonaika
+  # ==========
+  # esim. 14 tarkoittaa sitä, että ohjelman pitää
+  #       alkaa kello 14 tai sen jälkeen
+  #
+  # Oletusarvo jos kentän jättää tyhjäksi:
+  # => ei alkamisajankohtarajoituksia
+  starts_after:
+  # Kello 15:00 tai myöhemmin
+  #starts_after: 15,
+  # Kello 21:00 tai myöhemmin
+  #starts_after: 21,
 
-    # Aikarajaus
-    # ==========
-    # esim. 14 tarkoittaa sitä, että vain viikon sisällä
-    #       tulleet ohjelmat ladataan
-    #
-    # Vaihtoehdot:
-    # <päivien lukumäärä numerona>
-    #
-    # Oletusarvo jos kentän jättää tyhjäksi:
-    # => ei aikarajausta
-    lifespan: ,
-    # Samana päivänä
-    #lifespan: 1,
-    # Viikon sisällä
-    #lifespan: 7,
-    # Kahden viikon sisällä
-    #lifespan: 14,
+  # Aikarajaus
+  # ==========
+  # esim. 14 tarkoittaa sitä, että vain viikon sisällä
+  #       tulleet ohjelmat ladataan
+  #
+  # Vaihtoehdot:
+  # <päivien lukumäärä numerona>
+  #
+  # Oletusarvo jos kentän jättää tyhjäksi:
+  # => ei aikarajausta
+  lifespan:
+  # Samana päivänä
+  #lifespan: 1,
+  # Viikon sisällä
+  #lifespan: 7,
+  # Kahden viikon sisällä
+  #lifespan: 14,
 
-    # Viikonpäivä
-    # ===========
-    # esim. [MON, TUE]
-    #
-    # Vaihtoehdot:
-    # MON | TUE | WED | THU | FRI | SAT | SUN
-    #
-    # Oletusarvo jos kentän jättää tyhjäksi:
-    # => ei aikarajausta
-    weekday: , }
-    # Tietty päivä (perjantai):
-    #weekday: [FRI],
-    # Arkipäivät:
-    #weekday: [MON, TUE, WED, THU, FRI],
-    # Viikonloppu:
-    #weekday: [SAT, SUN],
+  # Viikonpäivä
+  # ===========
+  # esim. [MON, TUE]
+  #
+  # Vaihtoehdot:
+  # MON | TUE | WED | THU | FRI | SAT | SUN
+  #
+  # Oletusarvo jos kentän jättää tyhjäksi:
+  # => ei aikarajausta
+  weekday:
+  # Tietty päivä (perjantai):
+  #weekday: [FRI],
+  # Arkipäivät:
+  #weekday: [MON, TUE, WED, THU, FRI],
+  # Viikonloppu:
+  #weekday: [SAT, SUN],
 
-ohjelma2: {
-    keyword: Yle Uutiset sää,
-    target: title,
-    channel: [YLE TV1],
-    starts_after: 17,
-    lifespan: 1,
-    weekday: , }
+ohjelma2:
+  keyword: Yle Uutiset sää
+  target: title
+  channel: [YLE TV1]
+  starts_after: 17
+  lifespan: 1
+  weekday:
 
-ohjelma3: {
-    keyword: A-Studio,
-    target: description,
-    channel: [YLE TV1],
-    starts_after: ,
-    lifespan: ,
-    weekday: , }
+ohjelma3:
+  keyword: A-Studio
+  target: description
+  channel: [YLE TV1]
+  starts_after:
+  lifespan:
+  weekday:
 
-ohjelma4: {
-    keyword: C.S.I. Miami,
-    target: either,
-    channel: [MTV3],
-    starts_after: 21,
-    lifespan: 7,
-    weekday: , }
+ohjelma4:
+  keyword: C.S.I. Miami
+  target: either
+  channel: [MTV3]
+  starts_after: 21
+  lifespan: 7
+  weekday:
 
 # Avainsanat voi kirjoittaa myös "tiiviistettyyn" muotoon
 # ohjelma5: { keyword: formula }

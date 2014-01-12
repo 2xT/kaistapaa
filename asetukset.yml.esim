@@ -1,34 +1,34 @@
 # TVkaista -palvelun tunnukset
-credentials: {
-	# TVkaista username
-	user: USERNAME,
-	# TVkaista password
-	password: PASSWORD, } 
+credentials:
+  # TVkaista username
+  user: USERNAME
+  # TVkaista password
+  password: PASSWORD
 
 # Asetukset
-settings: {
-	# Quality of the downloaded media [ mp4 | mpeg4 | h264 | ts ]
-	quality: ts,
-	# Proxy address - NOT IMPLEMENTED YET
-	proxy_addr: ,
-	# Proxy port - NOT IMPLEMENTED YET
-	proxy_port: ,
-	# Directory where downloaded tv programs are stored (NO TRAILING SLASH!)
-	mediadir: /path/to/your/media,
-	# Directory where the state is stored (NO TRAILING SLASH!)
-	historydir: /path/to/your/state,
-	# Location for lockfile that prevents multiple instances being run
-	lockfile: /path/to/your/state/pid,
-	# Location for logfile that records all activity
-	activitylogfile: /path/to/your/state/activity,
-	# Location for logfile that records all errors
-	errorlogfile: /path/to/your/state/errors, }
+settings:
+  # Quality of the downloaded media [ mp4 | mpeg4 | h264 | ts ]
+  quality: ts
+  # Proxy address - NOT IMPLEMENTED YET
+  proxy_addr:
+  # Proxy port - NOT IMPLEMENTED YET
+  proxy_port:
+  # Directory where downloaded tv programs are stored (NO TRAILING SLASH!)
+  mediadir: /path/to/your/media
+  # Directory where the state is stored (NO TRAILING SLASH!)
+  historydir: /path/to/your/state
+  # Location for lockfile that prevents multiple instances being run
+  lockfile: /path/to/your/state/pid
+  # Location for logfile that records all activity
+  activitylogfile: /path/to/your/state/activity
+  # Location for logfile that records all errors
+  errorlogfile: /path/to/your/state/errors
 
 # Otsikkotiedot
-labels: {
-	# Label for new program
-	new: UUSI,
-	# Label for already downloaded program
-	old: WANHA,
-	# Label for corrupted program that needs to be downloaded again
-	reload: UUDELLEEN, }
+labels:
+  # Label for new program
+  new: UUSI
+  # Label for already downloaded program
+  old: WANHA
+  # Label for corrupted program that needs to be downloaded again
+  reload: UUDELLEEN
