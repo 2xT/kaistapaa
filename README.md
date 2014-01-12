@@ -15,7 +15,7 @@ Käyttöönotto
 1. [Asenna Ruby](https://www.ruby-lang.org/en/downloads/)
 2. [Asenna Git](http://git-scm.com/downloads)
 3. Hae [Kaistapää](https://github.com/2xT/kaistapaa)
-	
+
         git clone https://github.com/2xT/kaistapaa
 
 4. Muokkaa asetuksia
@@ -73,15 +73,15 @@ Miten toimia kun haluan ...
 
 * ... ladata "Pulp Fiction" -elokuvan?
 
-		ruby ./kaistapaa -s "pulp fiction"
+		./kaistapaa -s "pulp fiction"
 
 * ... ettei ohjelma tulosta ruudulle mitään vaan hakee pelkästään avainsanat.yml -tiedostossa asetetut ohjelmat?
 
-		ruby ./kaistapaa -v
+		./kaistapaa -v
 
 * ... poistaa lukkotiedoston?
 
-		ruby ./kaistapaa -f
+		./kaistapaa -f
 
 * ... siirtää lataushakemisto toiseen paikkaan?
 
@@ -94,13 +94,13 @@ Miten toimia kun haluan ...
 * ... suorittaa ohjelman automaattisesti 15 minuutin välein?
 
 	[Apple OSX](http://en.wikipedia.org/wiki/OS_X) ja [Linux](http://en.wikipedia.org/wiki/Linux) -pohjaisissa käyttöjärjestelmissä voit hyödyntää cron -palvelua.
-	
+
 	Muokkaa crontab -tiedostoa
-	
+
 		crontab -e
 
 	Lisää tiedoston loppuun uusi rivi
-	
+
 		*/15 * * * * /polku/minne/laitoit/ohjelman/nimelta/kaistapaa
 
 	Ohjelma luo käynnistyessään lukkotiedoston, mikä varmistaa, että vain yksi kaistapaa on kerrallaan ajossa.
