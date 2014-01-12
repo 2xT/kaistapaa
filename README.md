@@ -44,44 +44,44 @@ Käyttöönotto
 
 6. Tarkista, että laittamasi asetukset toimivat suorittamalla testiajo (tiedostoja ei vielä ladata)
 
-        ruby ./kaistapaa -t
+        ./kaistapaa.rb -t
 
 6. Suorita tuotantoajo (tiedostot ladataan)
 
-        ruby ./kaistapaa
+        ./kaistapaa.rb
 
 Miten toimia kun haluan ...
 ---------------------------
 
 * ... nähdä kaikki ohjelmiston komentorivivivut?
 
-		ruby ./kaistapaa -h
+		./kaistapaa.rb -h
 
 * ... kokeilla avainsana-asetuksia, mutta en vielä ladata ohjelmia?
 
-		ruby ./kaistapaa -t
+		./kaistapaa.rb -t
 
 * ... ladata rinnakkain eikä peräkkäin?
 
-		ruby ./kaistapaa -c
+		./kaistapaa.rb -c
 
 	(Omalla vastuulla, yhtäaikainen lataus ei ole tällä hetkellä kovin vakaa ...)
 
 * ... etsiä löytyykö TVkaistalta "Pulp Fiction" -elokuvaa?
 
-		ruby ./kaistapaa -s "pulp fiction" -t
+		./kaistapaa.rb -s "pulp fiction" -t
 
 * ... ladata "Pulp Fiction" -elokuvan?
 
-		./kaistapaa -s "pulp fiction"
+		./kaistapaa.rb -s "pulp fiction"
 
 * ... ettei ohjelma tulosta ruudulle mitään vaan hakee pelkästään avainsanat.yml -tiedostossa asetetut ohjelmat?
 
-		./kaistapaa -v
+		./kaistapaa.rb -v
 
 * ... poistaa lukkotiedoston?
 
-		./kaistapaa -f
+		./kaistapaa.rb -f
 
 * ... siirtää lataushakemisto toiseen paikkaan?
 
