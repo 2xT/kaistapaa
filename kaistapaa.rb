@@ -264,7 +264,7 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
 
 rescue Exception => e
   $stderr.puts "Exception #{e} : #{e.message}"
-  $stderr.puts "Stack trace: #{backtrace.map {|l| "  #{l}\n"}.join}"
+  $stderr.puts "Stack trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
 
   program_filename
 end # def
@@ -313,7 +313,7 @@ a_logger.formatter       = proc do |severity, datetime, progname, msg|
 end
 
 if locking.status
-  if options[:removelock] == true
+  if options.removelock
     locking.remove
   else
     puts "[!] Lockfile #{config['settings']['lockfile']} was found."
@@ -328,12 +328,12 @@ if locking.status
 end
 
 locking.enable
-puts "[+] Lock acquired" if options[:debug] == true
+puts "[+] Lock acquired" if options.debug
 
-if options[:search]
-  puts "[+] Searching #{options[:search]}"
+if options.search
+  puts "[+] Searching #{options.search}"
   keywords = {}
-  term = { 'keyword' => options[:search] }
+  term = { 'keyword' => options.search }
   keywords['search'] = term
 end
 
@@ -345,7 +345,7 @@ keywords.each_key do |key|
 
   feed = "http://tvkaista.fi/feed/search/#{URI.escape(keywords[key]['target'])}/#{URI.escape(keywords[key]['keyword'])}/#{URI.escape(config['settings']['quality'])}.rss"
 
-  if options[:debug] == true
+  if options.debug
     print "[+] KEYWORD #{keywords[key]['keyword']} IN #{keywords[key]['target']}"
     if keywords[key]['channel']
       print " CHANNEL #{keywords[key]['channel']}"
@@ -387,9 +387,9 @@ begin
           # How old is the current program (in days)?
           delta = (time_now - program.dc_date).to_i / (24 * 60 * 60)
           if delta < entry.lifespan
-            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options.debug
             queue_for_download = false
           end
         end
@@ -397,9 +397,9 @@ begin
         # Does the entry have a lifespan restriction?
         if entry.channel and queue_for_download == true
           if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
-            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options.debug
             queue_for_download = false
           end
         end
@@ -407,9 +407,9 @@ begin
         # Does the entry have a timetable restriction?
         if entry.starts_after and queue_for_download == true
           if entry.starts_after < program.dc_date.hour
-            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options.debug
             queue_for_download = false
           end
         end
@@ -417,9 +417,9 @@ begin
         # Does the entry have a weekday restriction?
         if entry.weekday and queue_for_download == true
           if entry.weekday.any?{ |s| s.casecmp(weekdays[program.dc_date.wday])==0 }
-            puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options.debug
             queue_for_download = false
           end
         end
@@ -427,7 +427,7 @@ begin
         # Download the actual media file if it is already available (program.respond_to?('enclosure'))
         if queue_for_download == true
           if program.enclosure
-            if options[:concurrency] == true
+            if options.concurrency
               # Still trying to figure out how threads work in ruby ...
               threads << Thread.new do
                 begin
@@ -453,7 +453,7 @@ begin
   end # feeds.each do |entry|
 
   # Wait for all the threads to finish before proceeding
-  threads.each(&:join) if options[:concurrency] == true
+  threads.each(&:join) if options.concurrency
 
   # "Catch all" error handling
 rescue Exception => e
@@ -471,7 +471,7 @@ ensure
   activity_log.close
   error_log.close
 
-  if options[:debug] == true
+  if options.debug
     puts "[+] Lock released"
     puts "[+] All done."
   end
