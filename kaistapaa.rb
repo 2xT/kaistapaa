@@ -4,11 +4,11 @@
 # Last update : 2013-11-16
 # License     : http://www.dbad-license.org/
 
-# Path to configuration files i.e. 
+# Path to configuration files i.e.
 #   'asetukset.yml'
 #   'avainsanat.yml'
 # Defaults to the same directory with kaistapaa.rb
-path_to_config = '.'
+path_to_config = File.dirname(__FILE__)
 
 # TODO
 # ====
@@ -61,7 +61,7 @@ class Locking
   # Enable locking
   def enable
     @file = File.open(@filename, 'w')
-    @file.write(@time) 
+    @file.write(@time)
   end
 
   # Disable locking
@@ -139,10 +139,10 @@ end  # class Optparse
 
 def parse_yaml(filename)
   parsed = begin
-    config = YAML.load(File.open(filename))
-  rescue ArgumentError => e
-    puts "[!] Could not parse #{filename}: #{e.message}"
-  end
+             config = YAML.load(File.open(filename))
+           rescue ArgumentError => e
+             puts "[!] Could not parse #{filename}: #{e.message}"
+           end
 
   config
 end # def
@@ -187,49 +187,49 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
 
   # Check whether the program matches the defined criteria
   if (tvkaista_item.target == 'title' and                      # match title
-             program.title =~ /#{tvkaista_item.keyword}/i) or
-     (tvkaista_item.target == 'description' and                # match description
-       program.description =~ /#{tvkaista_item.keyword}/i) or
-     (tvkaista_item.target == 'either' and                     # match either
-            (program.title =~ /#{tvkaista_item.keyword}/i or
-       program.description =~ /#{tvkaista_item.keyword}/i))
+      program.title =~ /#{tvkaista_item.keyword}/i) or
+    (tvkaista_item.target == 'description' and                # match description
+     program.description =~ /#{tvkaista_item.keyword}/i) or
+    (tvkaista_item.target == 'either' and                     # match either
+     (program.title =~ /#{tvkaista_item.keyword}/i or
+      program.description =~ /#{tvkaista_item.keyword}/i))
 
-       # Check if the file already exists (both presence on local disk and semaphore metadata)
-       msg = nil
-       if File.exist?(program_filename) == false and File.exist?(semaphore) == false
-         # NEW
-         msg = "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
-         download_flag = true
-       elsif File.exist?(program_filename) == true
-         # Download again only if the filesize on the disk is smaller than on the RSS feed
-         # i.e. there is a chance that download was previously corrupted
-         if File.stat(program_filename).size >= program_size
-           # OLD
-           msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
-         else # File.stat(program_filename).size < program_size
-           # RELOAD
+    # Check if the file already exists (both presence on local disk and semaphore metadata)
+    msg = nil
+    if File.exist?(program_filename) == false and File.exist?(semaphore) == false
+      # NEW
+      msg = "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
+      download_flag = true
+    elsif File.exist?(program_filename) == true
+      # Download again only if the filesize on the disk is smaller than on the RSS feed
+      # i.e. there is a chance that download was previously corrupted
+      if File.stat(program_filename).size >= program_size
+        # OLD
+        msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
+      else # File.stat(program_filename).size < program_size
+        # RELOAD
 
-           # This is horrible program logic but it turns out that TVkaista sometimes
-           # provides inaccurate filesize information on the RSS feed and thus some files get
-           # reloaded over and over again.
-           # On the other hand, if the semaphore exists we can be pretty certain that the
-           # file was downloaded successfully.
-           # So, for now we will download again only if the semaphore does not exist.
-		   if (File.stat(program_filename).size == 0) or
-		      (File.stat(program_filename).size < program_size) or
-		      (File.exist?(semaphore) == false)
-             msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
-             download_flag = true
-             if File.exists?(semaphore)
-               File.delete(semaphore)
-             end
-           end
-         end
-       end
-       if options[:verbose] == true and msg
-         puts msg
-         a_logger.info msg
-       end
+        # This is horrible program logic but it turns out that TVkaista sometimes
+        # provides inaccurate filesize information on the RSS feed and thus some files get
+        # reloaded over and over again.
+        # On the other hand, if the semaphore exists we can be pretty certain that the
+        # file was downloaded successfully.
+        # So, for now we will download again only if the semaphore does not exist.
+        if (File.stat(program_filename).size == 0) or
+          (File.stat(program_filename).size < program_size) or
+          (File.exist?(semaphore) == false)
+          msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
+          download_flag = true
+          if File.exists?(semaphore)
+            File.delete(semaphore)
+          end
+        end
+      end
+    end
+    if options[:verbose] == true and msg
+      puts msg
+      a_logger.info msg
+    end
   end # if title | description | either ...
 
   # Disable download if test mode is enabled
@@ -262,16 +262,16 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
     puts "[+] Semaphore created for #{program_filename}" if options[:debug] == true
   end
 
-  rescue Exception => e
-    $stderr.puts “Exception #{e} : #{e.message}"
-    $stderr.puts "Stack trace: #{backtrace.map {|l| "  #{l}\n"}.join}"
+rescue Exception => e
+  $stderr.puts "Exception #{e} : #{e.message}"
+  $stderr.puts "Stack trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
 
   program_filename
 end # def
 
 # Main
-keywords = parse_yaml("#{path_to_config}/avainsanat.yml")
-config   = parse_yaml("#{path_to_config}/asetukset.yml")
+keywords = parse_yaml(File.join(path_to_config, "avainsanat.yml"))
+config   = parse_yaml(File.join(path_to_config, "asetukset.yml"))
 options  = Optparse.parse(ARGV)
 time_now = Time.new
 threads  = []
@@ -313,7 +313,7 @@ a_logger.formatter       = proc do |severity, datetime, progname, msg|
 end
 
 if locking.status
-  if options[:removelock] == true
+  if options.removelock
     locking.remove
   else
     puts "[!] Lockfile #{config['settings']['lockfile']} was found."
@@ -328,12 +328,12 @@ if locking.status
 end
 
 locking.enable
-puts "[+] Lock acquired" if options[:debug] == true
+puts "[+] Lock acquired" if options.debug
 
-if options[:search]
-  puts "[+] Searching #{options[:search]}"
+if options.search
+  puts "[+] Searching #{options.search}"
   keywords = {}
-  term = { 'keyword' => options[:search] }
+  term = { 'keyword' => options.search }
   keywords['search'] = term
 end
 
@@ -345,7 +345,7 @@ keywords.each_key do |key|
 
   feed = "http://tvkaista.fi/feed/search/#{URI.escape(keywords[key]['target'])}/#{URI.escape(keywords[key]['keyword'])}/#{URI.escape(config['settings']['quality'])}.rss"
 
-  if options[:debug] == true
+  if options.debug
     print "[+] KEYWORD #{keywords[key]['keyword']} IN #{keywords[key]['target']}"
     if keywords[key]['channel']
       print " CHANNEL #{keywords[key]['channel']}"
@@ -354,14 +354,14 @@ keywords.each_key do |key|
     puts "    #{feed}"
   end
   feeds << TVkaistaFeed.new(
-                feed         = feed,
-                keyword      = keywords[key]['keyword'],
-                target       = keywords[key]['target'],
-                lifespan     = keywords[key]['lifespan'],
-                starts_after = keywords[key]['starts_after'],
-                channel      = keywords[key]['channel'],
-                weekday      = keywords[key]['weekday']
-                )
+    feed         = feed,
+    keyword      = keywords[key]['keyword'],
+    target       = keywords[key]['target'],
+    lifespan     = keywords[key]['lifespan'],
+    starts_after = keywords[key]['starts_after'],
+    channel      = keywords[key]['channel'],
+    weekday      = keywords[key]['weekday']
+  )
 end
 
 # Iterate array of TVkaistaFeed objects i.e. for each entry we
@@ -387,9 +387,9 @@ begin
           # How old is the current program (in days)?
           delta = (time_now - program.dc_date).to_i / (24 * 60 * 60)
           if delta < entry.lifespan
-            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} AGE MATCH (#{delta}/#{entry.lifespan} DAYS)" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} AGE MISMATCH (#{delta}/#{entry.lifespan} DAYS)" if options.debug
             queue_for_download = false
           end
         end
@@ -397,9 +397,9 @@ begin
         # Does the entry have a lifespan restriction?
         if entry.channel and queue_for_download == true
           if entry.channel.any?{ |s| s.casecmp(program.source.content)==0 }
-            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} CHANNEL MATCH #{program.source.content}" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} CHANNEL MISMATCH #{entry.channel} != #{program.source.content}" if options.debug
             queue_for_download = false
           end
         end
@@ -407,9 +407,9 @@ begin
         # Does the entry have a timetable restriction?
         if entry.starts_after and queue_for_download == true
           if entry.starts_after < program.dc_date.hour
-            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} STARTS AFTER #{entry.starts_after}:00" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} STARTS BEFORE #{entry.starts_after}:00" if options.debug
             queue_for_download = false
           end
         end
@@ -417,9 +417,9 @@ begin
         # Does the entry have a weekday restriction?
         if entry.weekday and queue_for_download == true
           if entry.weekday.any?{ |s| s.casecmp(weekdays[program.dc_date.wday])==0 }
-            puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options[:debug] == true
+            puts "[+] KEYWORD #{entry.keyword} WEEKDAY MATCH #{entry.weekday}" if options.debug
           else
-            puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options[:debug] == true
+            puts "[-] KEYWORD #{entry.keyword} WEEKDAY MISMATCH #{entry.weekday}" if options.debug
             queue_for_download = false
           end
         end
@@ -427,7 +427,7 @@ begin
         # Download the actual media file if it is already available (program.respond_to?('enclosure'))
         if queue_for_download == true
           if program.enclosure
-            if options[:concurrency] == true
+            if options.concurrency
               # Still trying to figure out how threads work in ruby ...
               threads << Thread.new do
                 begin
@@ -453,15 +453,15 @@ begin
   end # feeds.each do |entry|
 
   # Wait for all the threads to finish before proceeding
-  threads.each(&:join) if options[:concurrency] == true
+  threads.each(&:join) if options.concurrency
 
-# "Catch all" error handling
+  # "Catch all" error handling
 rescue Exception => e
 
   puts "ERROR: #{e.inspect}"
   e_logger.info "ERROR: #{e.inspect}"
 
-# We need to clean up - no matter what
+  # We need to clean up - no matter what
 ensure
 
   # Remove lock
@@ -471,7 +471,7 @@ ensure
   activity_log.close
   error_log.close
 
-  if options[:debug] == true
+  if options.debug
     puts "[+] Lock released"
     puts "[+] All done."
   end

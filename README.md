@@ -15,7 +15,7 @@ Käyttöönotto
 1. [Asenna Ruby](https://www.ruby-lang.org/en/downloads/)
 2. [Asenna Git](http://git-scm.com/downloads)
 3. Hae [Kaistapää](https://github.com/2xT/kaistapaa)
-	
+
         git clone https://github.com/2xT/kaistapaa
 
 4. Muokkaa asetuksia
@@ -44,44 +44,44 @@ Käyttöönotto
 
 6. Tarkista, että laittamasi asetukset toimivat suorittamalla testiajo (tiedostoja ei vielä ladata)
 
-        ruby ./kaistapaa -t
+        ./kaistapaa.rb -t
 
 6. Suorita tuotantoajo (tiedostot ladataan)
 
-        ruby ./kaistapaa
+        ./kaistapaa.rb
 
 Miten toimia kun haluan ...
 ---------------------------
 
 * ... nähdä kaikki ohjelmiston komentorivivivut?
 
-		ruby ./kaistapaa -h
+		./kaistapaa.rb -h
 
 * ... kokeilla avainsana-asetuksia, mutta en vielä ladata ohjelmia?
 
-		ruby ./kaistapaa -t
+		./kaistapaa.rb -t
 
 * ... ladata rinnakkain eikä peräkkäin?
 
-		ruby ./kaistapaa -c
+		./kaistapaa.rb -c
 
 	(Omalla vastuulla, yhtäaikainen lataus ei ole tällä hetkellä kovin vakaa ...)
 
 * ... etsiä löytyykö TVkaistalta "Pulp Fiction" -elokuvaa?
 
-		ruby ./kaistapaa -s "pulp fiction" -t
+		./kaistapaa.rb -s "pulp fiction" -t
 
 * ... ladata "Pulp Fiction" -elokuvan?
 
-		ruby ./kaistapaa -s "pulp fiction"
+		./kaistapaa.rb -s "pulp fiction"
 
 * ... ettei ohjelma tulosta ruudulle mitään vaan hakee pelkästään avainsanat.yml -tiedostossa asetetut ohjelmat?
 
-		ruby ./kaistapaa -v
+		./kaistapaa.rb -v
 
 * ... poistaa lukkotiedoston?
 
-		ruby ./kaistapaa -f
+		./kaistapaa.rb -f
 
 * ... siirtää lataushakemisto toiseen paikkaan?
 
@@ -94,13 +94,13 @@ Miten toimia kun haluan ...
 * ... suorittaa ohjelman automaattisesti 15 minuutin välein?
 
 	[Apple OSX](http://en.wikipedia.org/wiki/OS_X) ja [Linux](http://en.wikipedia.org/wiki/Linux) -pohjaisissa käyttöjärjestelmissä voit hyödyntää cron -palvelua.
-	
+
 	Muokkaa crontab -tiedostoa
-	
+
 		crontab -e
 
 	Lisää tiedoston loppuun uusi rivi
-	
+
 		*/15 * * * * /polku/minne/laitoit/ohjelman/nimelta/kaistapaa
 
 	Ohjelma luo käynnistyessään lukkotiedoston, mikä varmistaa, että vain yksi kaistapaa on kerrallaan ajossa.
