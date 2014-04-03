@@ -343,7 +343,7 @@ keywords.each_key do |key|
     keywords[key]['target'] = 'title'
   end
 
-  feed = "http://tvkaista.fi/feed/search/#{URI.escape(keywords[key]['target'])}/#{URI.escape(keywords[key]['keyword'])}/#{URI.escape(config['settings']['quality'])}.rss"
+  feed = "http://tvkaista.com/feed/search/#{URI.escape(keywords[key]['target'])}/#{URI.escape(keywords[key]['keyword'])}/#{URI.escape(config['settings']['quality'])}.rss"
 
   if options.debug
     print "[+] KEYWORD #{keywords[key]['keyword']} IN #{keywords[key]['target']}"

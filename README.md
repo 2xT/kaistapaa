@@ -1,13 +1,13 @@
 Kaistapää - TVkaista downloader
 ===============================
 
-Kaistapää on komentoriviohjelma, mikä mahdollistaa avainsanojen perusteella tapahtuvan mediatiedostojen lataamisen [TVkaista](http://tvkaista.fi/) -palvelusta.
+Kaistapää on komentoriviohjelma, mikä mahdollistaa avainsanojen perusteella tapahtuvan mediatiedostojen lataamisen [TVkaista](http://tvkaista.com/) -palvelusta.
 
 Kaistapää on toteutettu [Ruby](https://www.ruby-lang.org/en/downloads/) -ohjelmointikielellä ja toimii kaikilla yleisimmillä käyttöjärjestelmillä.
 
 Kaistapään toimivuus on testattu Rubyn versiolla 2.0. Ohjelma saattaa toimia vanhemmillakin Rubyn versioilla, mutta niiden toimivuutta ei ole kokeiltu.
 
-Ohjelma tarvitsee [TVkaista](http://tvkaista.fi/) -palvelun tunnukset toimiakseen.
+Ohjelma tarvitsee [TVkaista](http://tvkaista.com/) -palvelun tunnukset toimiakseen.
 
 Käyttöönotto
 ------------
