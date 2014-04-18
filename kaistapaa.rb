@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Author      : 2xT@iki.fi
-# Last update : 2013-11-16
+# Last update : 2014-04-18
 # License     : http://www.dbad-license.org/
 
 # Path to configuration files i.e.
@@ -19,8 +19,8 @@ path_to_config = File.dirname(__FILE__)
 #    2. I decided to learn ruby on the side i.e. this is my "hello world" and I'm quite sure
 #       the rubyists out there will find the code utterly disgusting. Sorry about that, I'm just
 #       learning :)
-#    3. I'm a bit ashamed to publish this cruft ... but I figured that if this solved the case
-#       for me it might do the same for others as well. Sharing is caring :)
+#    3. I'm a bit ashamed to publish this cruft ... but I figured that if this worked for me
+#       it might do the same for others as well. Sharing is caring :)
 #
 # => Add proxy support
 #    1. Add configuration items
@@ -145,13 +145,14 @@ def parse_yaml(filename)
            end
 
   config
-end # def
+end # def parse_yaml
 
-# program       => contains single RSS feed item
-# config        => contains config from 'asetukset.yml'
-# options       => contains command line parameters
-# tvkaista_item => contains keyword information
-def fetch_file(program, config, options, tvkaista_item, a_logger)
+def fetch_file(program, config, options, tvkaista_item, a_logger, e_logger)
+  # program       => contains single RSS feed item
+  # config        => contains config from 'asetukset.yml'
+  # options       => contains command line parameters
+  # tvkaista_item => contains keyword information
+
   program_channel  = program.source.content
   program_url      = program.enclosure.url
   program_size     = program.enclosure.length
@@ -186,88 +187,86 @@ def fetch_file(program, config, options, tvkaista_item, a_logger)
   program_filename = "#{program_dir}/#{program_filename}"
 
   # Check whether the program matches the defined criteria
-  if (tvkaista_item.target == 'title' and                      # match title
-      program.title =~ /#{tvkaista_item.keyword}/i) or
-    (tvkaista_item.target == 'description' and                # match description
-     program.description =~ /#{tvkaista_item.keyword}/i) or
-    (tvkaista_item.target == 'either' and                     # match either
-     (program.title =~ /#{tvkaista_item.keyword}/i or
-      program.description =~ /#{tvkaista_item.keyword}/i))
+  if (tvkaista_item.target == 'title'       and program.title       =~ /#{tvkaista_item.keyword}/i) or # match title
+     (tvkaista_item.target == 'description' and program.description =~ /#{tvkaista_item.keyword}/i) or # match description
+     (tvkaista_item.target == 'either'      and (program.title      =~ /#{tvkaista_item.keyword}/i  or
+      program.description  =~ /#{tvkaista_item.keyword}/i))                                             # match either
 
-    # Check if the file already exists (both presence on local disk and semaphore metadata)
     msg = nil
-    if File.exist?(program_filename) == false and File.exist?(semaphore) == false
-      # NEW
+
+    # File was downloaded earlier
+    if File.exist?(semaphore) == true
+      # media     = ?       
+      # semaphore = YES
+      # rationale = OLD (semaphore indicates that the entry was downloaded earlier)
+      # action    = NONE
+      msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options.debug
+
+    # File was not downloaded earlier
+    elsif File.exist?(semaphore) == false
+      # media     = NO
+      # semaphore = NO
+      # rationale = NEW (no semaphore and media does not exist on the disk, must be new)
+      # action    = DOWNLOAD
       msg = "#{config['labels']['new']} : #{program_filename} [#{program_channel}]"
       download_flag = true
-    elsif File.exist?(program_filename) == true
-      # Download again only if the filesize on the disk is smaller than on the RSS feed
-      # i.e. there is a chance that download was previously corrupted
-      if File.stat(program_filename).size >= program_size
-        # OLD
-        msg = "#{config['labels']['old']} : #{program_filename} [#{program_channel}]" if options[:debug] == true
-      else # File.stat(program_filename).size < program_size
-        # RELOAD
 
-        # This is horrible program logic but it turns out that TVkaista sometimes
-        # provides inaccurate filesize information on the RSS feed and thus some files get
-        # reloaded over and over again.
-        # On the other hand, if the semaphore exists we can be pretty certain that the
-        # file was downloaded successfully.
-        # So, for now we will download again only if the semaphore does not exist.
-        if (File.stat(program_filename).size == 0) or
-          (File.stat(program_filename).size < program_size) or
-          (File.exist?(semaphore) == false)
-          msg = "#{config['labels']['reload']} : #{program_filename} [#{program_channel}] LOCAL #{File.stat(program_filename).size} < REMOTE #{program_size} = DIFF #{program_size - File.stat(program_filename).size}"
-          download_flag = true
-          if File.exists?(semaphore)
-            File.delete(semaphore)
-          end
-        end
-      end
-    end
-    if options[:verbose] == true and msg
+      # IMPORTANT NOTE:
+      # It turns out that TVkaista sometimes provides inaccurate filesize information -
+      # it can be that this code needs to be refactored.
+
+    end # was file downloaded earlier?
+
+    if options.verbose and msg
       puts msg
       a_logger.info msg
     end
+
   end # if title | description | either ...
 
   # Disable download if test mode is enabled
-  download_flag = false if options[:test] == true
+  download_flag = false if options.test
 
   # Download file
-  if program_filename and download_flag == true and File.exist?(semaphore) == false
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      request = Net::HTTP::Get.new uri
-      request.basic_auth config['credentials']['user'], config['credentials']['password']
+  begin
+    if program_filename and download_flag == true and File.exist?(semaphore) == false
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        request = Net::HTTP::Get.new uri
+        request.basic_auth config['credentials']['user'], config['credentials']['password']
 
-      http.request request do |response|
-        puts "[+] Writing #{program_filename} ..." if options[:debug] == true
+        http.request request do |response|
+          puts "[+] Writing #{program_filename} ..." if options.debug
 
-        unless Dir.exists?(program_dir)
-          FileUtils.mkdir_p program_dir
-          puts "[+] Created directory #{program_dir}"
-        end
+          unless Dir.exists?(program_dir)
+            FileUtils.mkdir_p program_dir
+            puts "[+] Created directory #{program_dir}"
+          end
 
-        open program_filename, 'wb' do |io|
-          response.read_body do |chunk|
-            io.write chunk
+          open program_filename, 'wb' do |io|
+            response.read_body do |chunk|
+              io.write chunk
+            end
           end
         end
       end
+      s = File.open(semaphore, 'w')
+      s.write("")
+      s.close
+      puts "[+] Semaphore created for #{program_filename}" if options.debug
     end
-    s = File.open(semaphore, 'w')
-    s.write("")
-    s.close
-    puts "[+] Semaphore created for #{program_filename}" if options[:debug] == true
+  rescue Exception => e
+
+    puts "ERROR: #{e.inspect}"
+    e_logger.info "ERROR: #{e.inspect}"
+
   end
 
-rescue Exception => e
-  $stderr.puts "Exception #{e} : #{e.message}"
-  $stderr.puts "Stack trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
+# rescue Exception => e
+#   $stderr.puts "Exception #{e} : #{e.message}"
+#   $stderr.puts "Stack trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
 
   program_filename
-end # def
+end # def fetch_file
 
 # Main
 keywords = parse_yaml(File.join(path_to_config, "avainsanat.yml"))
@@ -431,16 +430,16 @@ begin
               # Still trying to figure out how threads work in ruby ...
               threads << Thread.new do
                 begin
-                  fetch_file(program, config, options, entry, a_logger)
+                  fetch_file(program, config, options, entry, a_logger, e_logger)
                 rescue
                   puts "[-] Failed at fetching #{program.title}"
                 end
               end
             else
-              fetch_file(program, config, options, entry, a_logger)
+              fetch_file(program, config, options, entry, a_logger, e_logger)
             end
           else
-            if options[:debug] == true
+            if options.debug
               puts "[-] Current program does not contain the information needed for the download."
               puts "    This usually means that the media conversion on the server has not yet completed."
               puts "    In other words: please check back later :)"
