@@ -261,10 +261,6 @@ def fetch_file(program, config, options, tvkaista_item, a_logger, e_logger)
 
   end
 
-# rescue Exception => e
-#   $stderr.puts "Exception #{e} : #{e.message}"
-#   $stderr.puts "Stack trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
-
   program_filename
 end # def fetch_file
 
